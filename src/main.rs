@@ -1,23 +1,49 @@
-use std::{fs, thread};
-use std::time::{Duration, SystemTime};
+extern crate daemonize_me;
+extern crate notify;
 
-fn main() {
-    let path = "/Users/p.rojs/Desktop/DSC06326.png";
-    let mut last_modified = get_last_modified_time(path);
+use std::fs::File;
+use std::path::Path;
+use std::process::exit;
+
+use daemonize_me::Daemon;
+use notify::{recommended_watcher, RecursiveMode, Watcher};
+
+fn post_fork_parent(_: i32, _: i32) -> ! {
+    let mut watcher = recommended_watcher(|res| match res {
+        Ok(event) => println!("event: {:?}", event),
+        Err(e) => println!("watch error: {:?}", e),
+    })
+    .unwrap();
+
+    watcher
+        .watch(
+            Path::new("/Users/p.rojs/Desktop/DSC0632.png"),
+            RecursiveMode::Recursive,
+        )
+        .expect("File not found");
 
     loop {
-        thread::sleep(Duration::from_secs(5)); // Adjust the delay as needed
-        let current_modified = get_last_modified_time(path);
-
-        if current_modified != last_modified {
-            println!("File has been modified.");
-            last_modified = current_modified;
-        }
+        std::thread::sleep(std::time::Duration::from_secs(1));
     }
 }
 
-fn get_last_modified_time(path: &str) -> SystemTime {
-    fs::metadata(path)
-        .and_then(|metadata| metadata.modified())
-        .unwrap_or(SystemTime::now())
+fn main() {
+    let stdout = File::create("./logs/warthog.out").unwrap();
+    let stderr = File::create("./logs/warthog.err").unwrap();
+    let daemon = Daemon::new()
+        .pid_file("warthog.pid", Some(false))
+        .umask(0o000)
+        .work_dir(".")
+        .stdout(stdout)
+        .stderr(stderr)
+        .setup_post_fork_parent_hook(post_fork_parent)
+        .start();
+
+    match daemon {
+        Ok(_) => println!("Running in background..."),
+        Err(e) => {
+            eprintln!("Error, {}", e);
+            exit(-1);
+        },
+    }
 }
