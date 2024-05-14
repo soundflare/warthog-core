@@ -4,5 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+anyhow = "1.0.83"
 daemonize-me = "2.0.1"
+ipc-channel = "0.18.0"
 notify = { version = "6.1.1", features = ["serde"] }
+protobuf = "3.4.0"

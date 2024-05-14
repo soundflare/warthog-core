@@ -1,5 +1,7 @@
 use std::fs::File;
 use std::path::Path;
+use std::sync::mpsc;
+use std::thread;
 
 use daemonize_me::{Daemon, DaemonError};
 use notify::{recommended_watcher, RecursiveMode, Watcher};
@@ -18,11 +20,15 @@ pub fn set_up_daemon() -> Result<(), DaemonError> {
 }
 
 fn post_fork_parent(_: i32, _: i32) -> ! {
-    let mut watcher = recommended_watcher(|res| match res {
-        Ok(event) => println!("event: {:?}", event),
+    let (sender, receiver) = mpsc::channel();
+
+    let mut watcher = recommended_watcher(move |res| match res {
+        Ok(event) => {
+            sender.send(event).unwrap();
+        }
         Err(e) => println!("watch error: {:?}", e),
     })
-        .unwrap();
+    .unwrap();
 
     watcher
         .watch(
@@ -31,8 +37,14 @@ fn post_fork_parent(_: i32, _: i32) -> ! {
         )
         .expect("File not found");
 
-    loop {
-        std::thread::sleep(std::time::Duration::from_secs(1));
-        println!("Hi ho, hi ho, it's off to work we go...")
-    }
+    thread::spawn(move || loop {
+        if let Ok(event) = receiver.recv() {
+            println!("Received event: {:?}", event);
+
+
+        }
+    });
+
+    // The main thread waits for the daemonization to handle process management.
+    loop {}
 }
