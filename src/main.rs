@@ -6,6 +6,7 @@ use std::process::exit;
 use crate::daemon::daemon_loop::set_up_daemon;
 
 mod daemon;
+mod services;
 
 fn main() {
     let daemon = set_up_daemon();
