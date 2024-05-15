@@ -18,9 +18,9 @@ async fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     let config = Arc::new(Config::new().unwrap());
-    info!("Starting Warthog");
-
     let (sender, receiver) = mpsc::channel();
+
+
 
     let mut watcher = recommended_watcher(move |res| match res {
         Ok(event) => {
