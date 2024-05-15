@@ -15,4 +15,9 @@ walkdir = "2.5.0"
 sha2 = "0.10.8"
 thiserror = "1.0.58"
 dotenvy = "0.15.7"
+serde = { version = "1.0.202", features = ["derive"] }
 sqlx = { version = "0.7.4", features = ["runtime-tokio", "sqlite"] }
+
+[build-dependencies]
+protobuf = "3.4.0"
+protobuf-codegen = "3.4.0"

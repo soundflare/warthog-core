@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package vcs;
+package pipe;
 
 message Message {
     oneof message {
