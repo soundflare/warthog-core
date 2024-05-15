@@ -5,7 +5,6 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.83"
-daemonize-me = "2.0.1"
 ipc-channel = "0.18.0"
 notify = { version = "6.1.1", features = ["serde"] }
 protobuf = "3.4.0"
@@ -16,3 +15,4 @@ walkdir = "2.5.0"
 sha2 = "0.10.8"
 thiserror = "1.0.58"
 dotenvy = "0.15.7"
+sd-notify = "0.4.1"

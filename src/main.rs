@@ -1,15 +1,15 @@
-extern crate daemonize_me;
 extern crate notify;
 
-use std::process::exit;
-use std::sync::Arc;
 use env_logger::Env;
 use log::{error, info};
+use notify::{recommended_watcher, RecursiveMode, Watcher};
+use std::path::Path;
+use std::process::exit;
+use std::sync::{mpsc, Arc};
+use std::thread;
 
-use crate::daemon::daemon::set_up_daemon;
 use crate::utils::config::Config;
 
-mod daemon;
 mod services;
 mod utils;
 
@@ -17,15 +17,33 @@ mod utils;
 async fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    let daemon = set_up_daemon();
+    let config = Arc::new(Config::new().unwrap());
+    info!("Starting Warthog");
 
-    match daemon.await {
-        Ok(_) => {
-            info!("Daemon finished successfully");
+    let (sender, receiver) = mpsc::channel();
+
+    let mut watcher = recommended_watcher(move |res| match res {
+        Ok(event) => {
+            sender.send(event).unwrap();
         }
-        Err(e) => {
-            error!("Error: {}", e);
-            exit(-1);
+        Err(e) => info!("Watch error: {:?}", e),
+    })
+    .unwrap();
+
+    watcher
+        .watch(
+            Path::new("/Users/p.rojs/Desktop/DSC0632.png"),
+            RecursiveMode::Recursive,
+        )
+        .expect("File not found");
+
+    thread::spawn(move || loop {
+        if let Ok(event) = receiver.recv() {
+            info!("Received event: {:?}", event);
         }
+    });
+
+    loop {
+        info!("Running...");
     }
 }
