@@ -1,6 +1,5 @@
 use crate::processor::command::Command;
 use log::info;
-use std::fmt::Debug;
 use tokio::sync::mpsc::Receiver;
 
 pub struct Processor {
@@ -25,7 +24,7 @@ impl Processor {
         }
     }
 
-    // fn find_matching_path(database_paths: &[String], event_path: &str) -> Option<&String> {
-    //     database_paths.iter().find(|&db_path| event_path.starts_with(db_path))
-    // }
+    fn find_matching_path<'a>(database_paths: &'a[String], event_path: &'a str) -> Option<&'a String> {
+        database_paths.iter().find(|&db_path| event_path.starts_with(db_path))
+    }
 }
