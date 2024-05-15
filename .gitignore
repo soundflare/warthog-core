@@ -10,7 +10,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
-/logs/
-*.pid
-
 .env
+
+# SQLite
+*.db*
