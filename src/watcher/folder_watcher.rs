@@ -14,7 +14,9 @@ impl FolderWatcher {
     pub fn new(tx: Sender<Command>) -> Result<Self> {
         let tx = tx.clone();
         let watcher = recommended_watcher(move |res: std::result::Result<Event, notify::Error>| {
-            match tx.try_send(ChangeDetected { paths: res.unwrap().paths.clone() }) {
+            match tx.try_send(ChangeDetected {
+                paths: res.unwrap().paths.clone(),
+            }) {
                 Ok(_) => info!("Change detected"),
                 Err(e) => warn!("Failed to send message: {:?}", e),
             }

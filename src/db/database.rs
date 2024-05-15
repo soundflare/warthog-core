@@ -32,17 +32,22 @@ impl Database {
     }
 
     pub async fn get_all_projects(&self) -> Result<Vec<(i32, String, String)>, sqlx::Error> {
-        let result: Result<Vec<(i32, String, String)>, sqlx::Error> = sqlx::query_as("SELECT * FROM projects")
-            .fetch_all(&self.pool)
-            .await;
+        let result: Result<Vec<(i32, String, String)>, sqlx::Error> =
+            sqlx::query_as("SELECT * FROM projects")
+                .fetch_all(&self.pool)
+                .await;
 
         result
     }
 
     pub async fn insert_project(&mut self, name: &str, path: &str) -> Result<(), sqlx::Error> {
-        let result = sqlx::query!("INSERT INTO projects (name, path) VALUES ($1, $2)", name, path)
-            .execute(&self.pool)
-            .await;
+        let result = sqlx::query!(
+            "INSERT INTO projects (name, path) VALUES ($1, $2)",
+            name,
+            path
+        )
+        .execute(&self.pool)
+        .await;
 
         match result {
             Ok(_) => Ok(()),

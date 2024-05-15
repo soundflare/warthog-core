@@ -1,23 +1,23 @@
 extern crate notify;
 
-use env_logger::Env;
-use std::sync::Arc;
-use sqlx::migrate::Migrator;
-use tokio::sync::mpsc::channel;
-use tokio::sync::Mutex;
 use crate::db::database::Database;
 use crate::processor::processor::Processor;
+use env_logger::Env;
+use sqlx::migrate::Migrator;
+use std::sync::Arc;
+use tokio::sync::mpsc::channel;
+use tokio::sync::Mutex;
 
 use crate::utils::config::Config;
 use crate::watcher::folder_watcher::FolderWatcher;
 
+mod db;
+mod ipc;
 mod processor;
 mod tus;
 mod utils;
 mod vcs;
 mod watcher;
-mod db;
-mod ipc;
 
 static MIGRATOR: Migrator = sqlx::migrate!();
 

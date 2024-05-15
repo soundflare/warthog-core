@@ -15,6 +15,9 @@ impl Config {
         let database_url = env::var("DATABASE_URL").unwrap_or(String::from("sqlite://warthog.db"));
         let block_size = env::var("BLOCK_SIZE").map(|v| v.parse::<u32>().unwrap_or(1024))?;
 
-        Ok(Self { database_url, block_size })
+        Ok(Self {
+            database_url,
+            block_size,
+        })
     }
 }

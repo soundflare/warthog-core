@@ -1,7 +1,7 @@
-use std::fmt::Debug;
-use log::info;
-use tokio::sync::mpsc::Receiver;
 use crate::processor::command::Command;
+use log::info;
+use std::fmt::Debug;
+use tokio::sync::mpsc::Receiver;
 
 pub struct Processor {
     receiver: Receiver<Command>,
@@ -18,7 +18,7 @@ impl Processor {
                 Command::ChangeDetected { paths } => {
                     info!("Received event");
                     // paths.
-                },
+                }
                 // Add more command handling cases as needed
                 _ => {}
             }
