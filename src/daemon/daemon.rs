@@ -1,11 +1,11 @@
-use std::fs::File;
 use std::path::Path;
-use std::sync::mpsc;
+use std::sync::{Arc, mpsc};
 use std::thread;
 
 use daemonize_me::{Daemon, DaemonError};
 use log::info;
 use notify::{recommended_watcher, RecursiveMode, Watcher};
+use crate::utils::config::Config;
 
 pub async fn set_up_daemon() -> Result<(), DaemonError> {
     return Daemon::new()
@@ -17,6 +17,7 @@ pub async fn set_up_daemon() -> Result<(), DaemonError> {
 }
 
 fn post_fork_parent(_: i32, _: i32) -> ! {
+    let config = Arc::new(Config::new().unwrap());
     let (sender, receiver) = mpsc::channel();
 
     let mut watcher = recommended_watcher(move |res| match res {
@@ -36,7 +37,7 @@ fn post_fork_parent(_: i32, _: i32) -> ! {
 
     thread::spawn(move || loop {
         if let Ok(event) = receiver.recv() {
-            println!("Received event: {:?}", event);
+            info!("Received event: {:?}", event);
 
 
         }

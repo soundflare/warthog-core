@@ -2,10 +2,12 @@ extern crate daemonize_me;
 extern crate notify;
 
 use std::process::exit;
+use std::sync::Arc;
 use env_logger::Env;
-use log::info;
+use log::{error, info};
 
-use crate::daemon::daemon_loop::set_up_daemon;
+use crate::daemon::daemon::set_up_daemon;
+use crate::utils::config::Config;
 
 mod daemon;
 mod services;
@@ -19,10 +21,10 @@ async fn main() {
 
     match daemon.await {
         Ok(_) => {
-            info!("Daemon started successfully");
+            info!("Daemon finished successfully");
         }
         Err(e) => {
-            eprintln!("Error: {}", e);
+            error!("Error: {}", e);
             exit(-1);
         }
     }
