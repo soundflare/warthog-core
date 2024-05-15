@@ -15,7 +15,12 @@ impl FolderWatcher {
         let tx = tx.clone();
         let watcher = recommended_watcher(move |res: std::result::Result<Event, notify::Error>| {
             match tx.try_send(ChangeDetected {
-                paths: res.unwrap().paths.clone(),
+                paths: res
+                    .unwrap()
+                    .paths
+                    .iter()
+                    .map(|path| path.to_str().expect("Path is not valid UTF-8").to_string())
+                    .collect(),
             }) {
                 Ok(_) => info!("Change detected"),
                 Err(e) => warn!("Failed to send message: {:?}", e),

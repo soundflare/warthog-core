@@ -31,11 +31,16 @@ async fn main() {
         .run(&database.lock().await.pool)
         .await
         .expect("Error running migrations");
-    database.lock().await.populate_cache().await.expect("Error populating cache");
+    database
+        .lock()
+        .await
+        .populate_cache()
+        .await
+        .expect("Error populating cache");
 
     let (tx, rx) = channel(100);
     let mut watcher = FolderWatcher::new(tx).expect("Failed to create a folder watcher");
-    let mut processor = Processor::new(rx);
+    let mut processor = Processor::new(rx, database.clone());
 
     // TODO: For testing purposes - remove
     watcher

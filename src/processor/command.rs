@@ -6,5 +6,5 @@ pub enum Command {
     /// Add folder for watching
     AddFolder { path: String },
     /// Change detected in the file system.
-    ChangeDetected { paths: Vec<PathBuf> },
+    ChangeDetected { paths: Vec<String> },
 }

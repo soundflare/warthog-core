@@ -1,14 +1,14 @@
-use std::collections::HashMap;
 use crate::utils::config::Config;
 use log::{debug, error, info};
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::{Pool, Sqlite, SqlitePool};
+use std::collections::HashMap;
 use std::str::FromStr;
 use std::sync::Arc;
 
 pub struct Database {
     pub pool: Pool<Sqlite>,
-    pub cache: HashMap<i32, (String, String)>,
+    cache: HashMap<String, String>,
 }
 
 impl Database {
@@ -34,8 +34,12 @@ impl Database {
         Database { pool, cache }
     }
 
-    pub async fn get_all_projects(&self) -> Result<Vec<(i32, String, String)>, sqlx::Error> {
-        Ok(self.cache.iter().map(|(&id, &(ref name, ref path))| (id, name.clone(), path.clone())).collect())
+    pub async fn get_all_project_paths(&self) -> Result<Vec<String>, sqlx::Error> {
+        Ok(self
+            .cache
+            .iter()
+            .map(|(_, path)| path.clone())
+            .collect())
     }
 
     pub(crate) async fn populate_cache(&mut self) -> Result<(), sqlx::Error> {
@@ -46,11 +50,11 @@ impl Database {
 
         match result {
             Ok(projects) => {
-                for (id, name, path) in projects {
-                    self.cache.insert(id, (name, path));
+                for (_, name, path) in projects {
+                    self.cache.insert(name, path);
                 }
                 Ok(())
-            },
+            }
             Err(err) => Err(err),
         }
     }
@@ -66,10 +70,9 @@ impl Database {
 
         match result {
             Ok(_) => {
-                let id = self.pool.last_insert_rowid();
-                self.cache.insert(id, (name.to_string(), path.to_string()));
+                self.cache.insert(name.to_string(), path.to_string());
                 Ok(())
-            },
+            }
             Err(err) => Err(err),
         }
     }
