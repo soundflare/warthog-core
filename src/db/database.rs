@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use crate::utils::config::Config;
 use log::{debug, error, info};
 use sqlx::sqlite::SqliteConnectOptions;
@@ -7,6 +8,7 @@ use std::sync::Arc;
 
 pub struct Database {
     pub pool: Pool<Sqlite>,
+    pub cache: HashMap<i32, (String, String)>,
 }
 
 impl Database {
@@ -28,16 +30,29 @@ impl Database {
             }
         };
 
-        Database { pool }
+        let cache = HashMap::new();
+        Database { pool, cache }
     }
 
     pub async fn get_all_projects(&self) -> Result<Vec<(i32, String, String)>, sqlx::Error> {
+        Ok(self.cache.iter().map(|(&id, &(ref name, ref path))| (id, name.clone(), path.clone())).collect())
+    }
+
+    pub(crate) async fn populate_cache(&mut self) -> Result<(), sqlx::Error> {
         let result: Result<Vec<(i32, String, String)>, sqlx::Error> =
             sqlx::query_as("SELECT * FROM projects")
                 .fetch_all(&self.pool)
                 .await;
 
-        result
+        match result {
+            Ok(projects) => {
+                for (id, name, path) in projects {
+                    self.cache.insert(id, (name, path));
+                }
+                Ok(())
+            },
+            Err(err) => Err(err),
+        }
     }
 
     pub async fn insert_project(&mut self, name: &str, path: &str) -> Result<(), sqlx::Error> {
@@ -50,7 +65,11 @@ impl Database {
         .await;
 
         match result {
-            Ok(_) => Ok(()),
+            Ok(_) => {
+                let id = self.pool.last_insert_rowid();
+                self.cache.insert(id, (name.to_string(), path.to_string()));
+                Ok(())
+            },
             Err(err) => Err(err),
         }
     }
