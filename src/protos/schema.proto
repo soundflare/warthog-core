@@ -2,18 +2,19 @@ syntax = "proto3";
 
 package pipe;
 
-message Message {
+message WarthogMessage {
     oneof message {
         WatchProject watch_project = 1;
     }
 }
 
 message WatchProject {
-    string project_path = 1;
-    int32 debounce_period = 2; // Debounce period in milliseconds
+    string name = 1;
+    string project_path = 2;
+    optional int32 debounce_period = 3; // Debounce period in milliseconds
 }
 
 message Response {
     bool success = 1;
-    string message = 2;
+    string response_message = 2;
 }

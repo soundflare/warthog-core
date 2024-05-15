@@ -1,5 +1,5 @@
-use crate::processor::command::Command;
-use crate::processor::command::Command::ChangeDetected;
+use crate::processor::commands::WatcherCommand;
+use crate::processor::commands::WatcherCommand::ChangeDetected;
 use anyhow::Result;
 use log::{info, warn};
 use notify::{recommended_watcher, Event, RecommendedWatcher, RecursiveMode, Watcher};
@@ -11,7 +11,7 @@ pub struct FolderWatcher {
 }
 
 impl FolderWatcher {
-    pub fn new(tx: Sender<Command>) -> Result<Self> {
+    pub fn new(tx: Sender<WatcherCommand>) -> Result<Self> {
         let watcher = recommended_watcher(move |res: std::result::Result<Event, notify::Error>| {
             match tx.try_send(ChangeDetected {
                 paths: res

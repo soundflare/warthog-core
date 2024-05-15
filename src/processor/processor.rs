@@ -1,26 +1,26 @@
 use crate::db::database::Database;
-use crate::processor::command::Command;
+use crate::processor::commands::WatcherCommand;
 use log::info;
 use std::sync::Arc;
 use tokio::sync::mpsc::Receiver;
 use tokio::sync::Mutex;
 
 pub struct Processor {
-    receiver: Receiver<Command>,
+    receiver: Receiver<WatcherCommand>,
     database: Arc<Mutex<Database>>,
 }
 
 impl Processor {
-    pub fn new(receiver: Receiver<Command>, database: Arc<Mutex<Database>>) -> Self {
+    pub fn new(receiver: Receiver<WatcherCommand>, database: Arc<Mutex<Database>>) -> Self {
         Self { receiver, database }
     }
 
     pub async fn process_commands(&mut self) {
         while let Some(command) = self.receiver.recv().await {
             match command {
-                Command::ChangeDetected { paths } => self.handle_change_detected(paths).await,
-                // Add more command handling cases as needed
-                _ => {}
+                WatcherCommand::ChangeDetected { paths } => {
+                    self.handle_change_detected(paths).await
+                }
             }
         }
     }
