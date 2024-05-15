@@ -19,7 +19,7 @@ impl Database {
 
         let pool = match SqlitePool::connect_with(connection_options).await {
             Ok(pool) => {
-                info!("Connection to the database is successful!");
+                info!("Connection to the database is successful");
                 pool
             }
             Err(err) => {

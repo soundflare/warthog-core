@@ -1,23 +1,23 @@
 extern crate notify;
 
 use env_logger::Env;
-use log::info;
 use std::sync::Arc;
-use std::thread;
 use sqlx::migrate::Migrator;
 use tokio::sync::mpsc::channel;
 use tokio::sync::Mutex;
 use crate::db::database::Database;
+use crate::processor::processor::Processor;
 
 use crate::utils::config::Config;
 use crate::watcher::folder_watcher::FolderWatcher;
 
-mod communication;
+mod processor;
 mod tus;
 mod utils;
 mod vcs;
 mod watcher;
 mod db;
+mod ipc;
 
 static MIGRATOR: Migrator = sqlx::migrate!();
 
@@ -34,19 +34,12 @@ async fn main() {
 
     let (tx, mut rx) = channel(100);
     let mut watcher = FolderWatcher::new(tx).expect("Failed to create a folder watcher");
+    let mut processor = Processor::new(rx);
 
     // TODO: For testing purposes - remove
     watcher
         .watch_folder("/Users/p.rojs/Desktop/sample")
         .expect("TODO: panic message");
 
-    tokio::spawn(async move {
-        while let Some(event) = rx.recv().await {
-            info!("Received event: {:?}", event);
-        }
-    });
-
-    loop {
-        info!("Running...");
-    }
+    processor.process_commands().await;
 }
