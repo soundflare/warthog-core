@@ -40,13 +40,3 @@ impl FolderWatcher {
             .map_err(|e| anyhow::anyhow!(e))
     }
 }
-
-async fn handle_event(res: Result<Event>, sender: Sender<Event>) {
-    match res {
-        Ok(event) => {
-            info!("Change detected: {:?}", event);
-            sender.send(event).await.unwrap();
-        }
-        Err(e) => warn!("Watch error: {:?}", e),
-    }
-}

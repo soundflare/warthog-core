@@ -18,17 +18,17 @@ impl Processor {
     pub async fn process_commands(&mut self) {
         while let Some(command) = self.receiver.recv().await {
             match command {
-                Command::ChangeDetected { paths } => self.handle_change_detected(paths),
+                Command::ChangeDetected { paths } => self.handle_change_detected(paths).await,
                 // Add more command handling cases as needed
                 _ => {}
             }
         }
     }
 
-    fn handle_change_detected(&self, paths: Vec<String>) {
+    async fn handle_change_detected(&self, paths: Vec<String>) {
         info!("Received event");
 
-        let database_paths = match self.database.lock().await.get_all_project_paths().await {
+        let database_paths = match self.database.lock().await.get_all_project_paths() {
             Ok(paths) => paths,
             Err(err) => {
                 info!("Failed to get database paths: {:?}", err);

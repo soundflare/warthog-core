@@ -34,7 +34,7 @@ impl Database {
         Database { pool, cache }
     }
 
-    pub async fn get_all_project_paths(&self) -> Result<Vec<String>, sqlx::Error> {
+    pub fn get_all_project_paths(&self) -> Result<Vec<String>, sqlx::Error> {
         Ok(self.cache.iter().map(|(_, path)| path.clone()).collect())
     }
 
