@@ -1,46 +1,37 @@
 extern crate notify;
 
 use env_logger::Env;
-use log::{error, info};
-use notify::{recommended_watcher, RecursiveMode, Watcher};
-use std::path::Path;
-use std::process::exit;
-use std::sync::{mpsc, Arc};
+use log::info;
+use std::sync::Arc;
 use std::thread;
+use tokio::sync::mpsc::channel;
 
 use crate::utils::config::Config;
+use crate::watcher::folder_watcher::FolderWatcher;
 
-mod services;
+mod communication;
+mod tus;
 mod utils;
+mod vcs;
+mod watcher;
 
 #[tokio::main]
 async fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
     let config = Arc::new(Config::new().unwrap());
-    let (sender, receiver) = mpsc::channel();
+    let (tx, mut rx) = channel(100);
+    let mut watcher = FolderWatcher::new(tx).expect("Failed to create a folder watcher");
 
-
-
-    let mut watcher = recommended_watcher(move |res| match res {
-        Ok(event) => {
-            sender.send(event).unwrap();
-        }
-        Err(e) => info!("Watch error: {:?}", e),
-    })
-    .unwrap();
-
+    // TODO: For testing purposes - remove
     watcher
-        .watch(
-            Path::new("/Users/p.rojs/Desktop/DSC0632.png"),
-            RecursiveMode::Recursive,
-        )
-        .expect("File not found");
+        .watch_folder("/Users/p.rojs/Desktop/sample")
+        .expect("TODO: panic message");
 
     thread::spawn(move || loop {
-        if let Ok(event) = receiver.recv() {
-            info!("Received event: {:?}", event);
-        }
+        // if let Ok(event) = rx.recv() {
+        //     info!("Received event: {:?}", event);
+        // }
     });
 
     loop {

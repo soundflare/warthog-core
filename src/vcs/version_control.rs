@@ -1,5 +1,5 @@
 use crate::utils::config::Config;
-use anyhow::{Context, Result};
+use anyhow::Result;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use tokio::fs;
