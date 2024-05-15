@@ -18,9 +18,7 @@ impl Processor {
     pub async fn process_commands(&mut self) {
         while let Some(command) = self.receiver.recv().await {
             match command {
-                Command::ChangeDetected { paths } => {
-                    self.handle_change_detected(paths)
-                }
+                Command::ChangeDetected { paths } => self.handle_change_detected(paths),
                 // Add more command handling cases as needed
                 _ => {}
             }

@@ -35,11 +35,7 @@ impl Database {
     }
 
     pub async fn get_all_project_paths(&self) -> Result<Vec<String>, sqlx::Error> {
-        Ok(self
-            .cache
-            .iter()
-            .map(|(_, path)| path.clone())
-            .collect())
+        Ok(self.cache.iter().map(|(_, path)| path.clone()).collect())
     }
 
     pub(crate) async fn populate_cache(&mut self) -> Result<(), sqlx::Error> {
