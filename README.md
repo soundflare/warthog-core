@@ -1,13 +1,9 @@
 # warthog
 
--------------
-
 🚧 **Work in progress** 🚧
 
--------------
-
-**warthog** is a version control system designed for large binary files usually present in projects in media productions 
-(e.g.: DAW project files). It's written in Rust for efficiency and performance reasons. The main goal of the project is to provide a simple and efficient
+Warthog is a version control system designed for large binary files usually present in projects in media productions 
+(e.g. DAW project files). It's written in Rust for efficiency and performance reasons. The main goal of the project is to provide a simple and efficient
 way to version control large binary files and provide a solution like Git for media production workflows.
 
 ## How it works
