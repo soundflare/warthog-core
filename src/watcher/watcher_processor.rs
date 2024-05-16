@@ -1,16 +1,16 @@
 use crate::db::database::Database;
-use crate::processor::commands::WatcherCommand;
+use crate::watcher::watcher_command::WatcherCommand;
 use log::info;
 use std::sync::Arc;
 use tokio::sync::mpsc::Receiver;
 use tokio::sync::Mutex;
 
-pub struct Processor {
+pub struct WatcherProcessor {
     receiver: Receiver<WatcherCommand>,
     database: Arc<Mutex<Database>>,
 }
 
-impl Processor {
+impl WatcherProcessor {
     pub fn new(receiver: Receiver<WatcherCommand>, database: Arc<Mutex<Database>>) -> Self {
         Self { receiver, database }
     }

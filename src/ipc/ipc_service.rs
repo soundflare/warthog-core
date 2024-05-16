@@ -1,21 +1,22 @@
-use crate::processor::commands::IpcCommand;
-use crate::processor::commands::IpcCommand::WatchFolder;
-use crate::protos::pipe::schema::warthog_message::Message::WatchProject;
-use crate::protos::pipe::schema::{Response, WarthogMessage};
-use anyhow::{anyhow, Result};
+use crate::ipc::ipc_command::IpcCommand;
+use crate::ipc::ipc_command::IpcCommand::WatchFolder;
+use crate::protos::pipe::schema::warthog_message::Message::{ProjectToAdd, ProjectToRemove};
+use crate::protos::pipe::schema::{Response, UnwatchProject, WarthogMessage, WatchProject};
+use anyhow::Result;
 use log::error;
 use protobuf::Message;
+use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{UnixListener, UnixStream};
 use tokio::sync::mpsc::Sender;
 
-struct IpcService {
-    tx: Sender<IpcCommand>,
+pub struct IpcService {
+    tx: Arc<Sender<IpcCommand>>,
 }
 
 impl IpcService {
-    fn new(tx: Sender<IpcCommand>) -> Self {
-        IpcService { tx }
+    pub fn new(tx: Sender<IpcCommand>) -> Self {
+        IpcService { tx: Arc::new(tx) }
     }
 
     async fn handle_connection(&self, mut stream: UnixStream) -> Result<()> {
@@ -24,21 +25,17 @@ impl IpcService {
         let msg = WarthogMessage::parse_from_bytes(&buf[..n])?;
 
         let mut response = Response::new();
-        match msg.message.unwrap() {
-            WatchProject(watch_project) => {
-                self.tx
-                    .send(WatchFolder {
-                        name: watch_project.name,
-                        path: watch_project.project_path,
-                    })
+        match msg.message {
+            Some(ProjectToAdd(watch_project)) => {
+                self.handle_watch_project(watch_project, &mut response)
                     .await?;
-
-                response.success = true;
-                response.response_message = "Message received".to_string();
+            }
+            Some(ProjectToRemove(unwatch_project)) => {
+                self.handle_unwatch_project(unwatch_project, &mut response)
+                    .await?;
             }
             None => {
                 error!("Message is missing");
-
                 response.success = false;
                 response.response_message = "Message empty".to_string();
             }
@@ -49,19 +46,66 @@ impl IpcService {
         Ok(())
     }
 
-    async fn run(&self, path: &str) -> Result<()> {
+    async fn handle_watch_project(
+        &self,
+        project: WatchProject,
+        response: &mut Response,
+    ) -> Result<()> {
+        self.tx
+            .send(WatchFolder {
+                name: project.name,
+                path: project.project_path,
+            })
+            .await?;
+
+        response.success = true;
+        response.response_message = "Message received".to_string();
+        Ok(())
+    }
+
+    async fn handle_unwatch_project(
+        &self,
+        project: UnwatchProject,
+        response: &mut Response,
+    ) -> Result<()> {
+        self.tx
+            .send(WatchFolder {
+                name: project.name,
+                path: project.project_path,
+            })
+            .await?;
+
+        response.success = true;
+        response.response_message = "Message received".to_string();
+        Ok(())
+    }
+
+    /// Spawn a thread for handling new IPC connection and a thread for each connection.
+    pub async fn run(&self, path: &str) -> Result<()> {
         let _ = std::fs::remove_file(path);
         let listener = UnixListener::bind(path)?;
 
-        loop {
-            let (stream, _) = listener.accept().await?;
-            let service = self.clone();
+        let tx = Arc::clone(&self.tx);
+        tokio::spawn(async move {
+            loop {
+                let stream = match listener.accept().await {
+                    Ok((stream, _)) => stream,
+                    Err(e) => {
+                        error!("Failed to accept connection: {}", e);
+                        continue;
+                    }
+                };
 
-            tokio::spawn(async move {
-                if let Err(e) = service.handle_connection(stream).await {
-                    error!("Failed to handle connection: {}", e);
-                }
-            });
-        }
+                let tx_connection = Arc::clone(&tx);
+                tokio::spawn(async move {
+                    let service = IpcService { tx: tx_connection };
+                    if let Err(e) = service.handle_connection(stream).await {
+                        error!("Failed to handle connection: {}", e);
+                    }
+                });
+            }
+        });
+
+        Ok(())
     }
 }

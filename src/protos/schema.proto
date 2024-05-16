@@ -4,7 +4,8 @@ package pipe;
 
 message WarthogMessage {
     oneof message {
-        WatchProject watch_project = 1;
+        WatchProject project_to_add = 1;
+        UnwatchProject project_to_remove = 2;
     }
 }
 
@@ -12,6 +13,11 @@ message WatchProject {
     string name = 1;
     string project_path = 2;
     optional int32 debounce_period = 3; // Debounce period in milliseconds
+}
+
+message UnwatchProject {
+    string name = 1;
+    string project_path = 2;
 }
 
 message Response {

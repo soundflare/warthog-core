@@ -1,5 +1,5 @@
-use crate::processor::commands::WatcherCommand;
-use crate::processor::commands::WatcherCommand::ChangeDetected;
+use crate::watcher::watcher_command::WatcherCommand;
+use crate::watcher::watcher_command::WatcherCommand::ChangeDetected;
 use anyhow::Result;
 use log::{info, warn};
 use notify::{recommended_watcher, Event, RecommendedWatcher, RecursiveMode, Watcher};
