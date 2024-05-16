@@ -8,7 +8,7 @@ use protobuf::Message;
 use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{UnixListener, UnixStream};
-use tokio::sync::mpsc::Sender;
+use tokio::sync::broadcast::Sender;
 
 pub struct IpcService {
     tx: Arc<Sender<IpcCommand>>,
@@ -51,12 +51,10 @@ impl IpcService {
         project: WatchProject,
         response: &mut Response,
     ) -> Result<()> {
-        self.tx
-            .send(WatchFolder {
-                name: project.name,
-                path: project.project_path,
-            })
-            .await?;
+        self.tx.send(WatchFolder {
+            name: project.name,
+            path: project.project_path,
+        })?;
 
         response.success = true;
         response.response_message = "Message received".to_string();
@@ -68,12 +66,10 @@ impl IpcService {
         project: UnwatchProject,
         response: &mut Response,
     ) -> Result<()> {
-        self.tx
-            .send(WatchFolder {
-                name: project.name,
-                path: project.project_path,
-            })
-            .await?;
+        self.tx.send(WatchFolder {
+            name: project.name,
+            path: project.project_path,
+        })?;
 
         response.success = true;
         response.response_message = "Message received".to_string();

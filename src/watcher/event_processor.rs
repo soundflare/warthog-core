@@ -5,12 +5,12 @@ use std::sync::Arc;
 use tokio::sync::mpsc::Receiver;
 use tokio::sync::Mutex;
 
-pub struct WatcherProcessor {
+pub struct EventProcessor {
     receiver: Receiver<WatcherCommand>,
     database: Arc<Mutex<Database>>,
 }
 
-impl WatcherProcessor {
+impl EventProcessor {
     pub fn new(receiver: Receiver<WatcherCommand>, database: Arc<Mutex<Database>>) -> Self {
         Self { receiver, database }
     }

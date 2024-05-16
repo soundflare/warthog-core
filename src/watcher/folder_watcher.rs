@@ -1,17 +1,20 @@
+use crate::ipc::ipc_command::IpcCommand;
 use crate::watcher::watcher_command::WatcherCommand;
 use crate::watcher::watcher_command::WatcherCommand::ChangeDetected;
-use anyhow::{anyhow, Context, Result};
-use log::{error, info, warn};
+use anyhow::{anyhow, Result};
+use log::{error, info};
 use notify::{recommended_watcher, Event, RecommendedWatcher, RecursiveMode, Watcher};
 use std::path::Path;
+use tokio::sync::broadcast::Receiver;
 use tokio::sync::mpsc::Sender;
 
 pub struct FolderWatcher {
     watcher: RecommendedWatcher,
+    rx: Receiver<IpcCommand>,
 }
 
 impl FolderWatcher {
-    pub fn new(tx: Sender<WatcherCommand>) -> Result<Self> {
+    pub fn new(tx_watcher: Sender<WatcherCommand>, rx_ipc: Receiver<IpcCommand>) -> Result<Self> {
         let watcher = recommended_watcher(move |res: std::result::Result<Event, notify::Error>| {
             let event = match res {
                 Ok(event) => event,
@@ -28,19 +31,34 @@ impl FolderWatcher {
                 return;
             }
 
-            match tx.try_send(ChangeDetected { paths }) {
+            match tx_watcher.try_send(ChangeDetected { paths }) {
                 Ok(_) => info!("Change detected"),
                 Err(e) => error!("Failed to send message: {}", e),
             }
         })
         .map_err(|e| anyhow!("Failed to create a watcher: {}", e))?;
 
-        Ok(Self { watcher })
+        Ok(Self {
+            watcher,
+            rx: rx_ipc,
+        })
     }
 
-    pub fn watch_folder(&mut self, path: &str) -> Result<()> {
-        self.watcher
-            .watch(Path::new(path), RecursiveMode::Recursive)
-            .map_err(|e| anyhow!("Failed to add folder for watching: {}", e))
+    pub async fn watch_for_folders(&mut self) {
+        while let Ok(command) = self.rx.recv().await {
+            match command {
+                IpcCommand::WatchFolder { path, .. } => {
+                    match self
+                        .watcher
+                        .watch(Path::new(&path), RecursiveMode::Recursive)
+                        .map_err(|e| anyhow!("Failed to add folder for watching: {}", e))
+                    {
+                        Ok(_) => info!("Watching folder: {}", path),
+                        Err(e) => error!("Error trying to watch folder: {}", e),
+                    }
+                }
+                _ => (),
+            }
+        }
     }
 }
