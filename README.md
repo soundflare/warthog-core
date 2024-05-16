@@ -12,6 +12,9 @@ This part of a larger application for version control and acts as a service that
 splits the files into chunks, run deduplication, and compresses them with gzip. It then sends the chunks to a warthog server for storage via Tus protocol for resumable uploads.
 The main supported storage backend is planned to be S3, with support for other storage backends, including local storage, planned in the future.
 
+For interfacing with the service there is an IPC pipe that can be used to send commands to the service via a Protobuf scheme. 
+It's meant to be used with a CLI tool and a Desktop app that uses the pipe to communicate with the service.
+
 ## Configuration
 
 ### .env.example file
