@@ -2,12 +2,12 @@ extern crate notify;
 
 use crate::db::database::Database;
 use crate::ipc::ipc_command::IpcCommand;
+use crate::ipc::ipc_service::IpcService;
 use env_logger::Env;
 use sqlx::migrate::Migrator;
 use std::sync::Arc;
 use tokio::sync::mpsc::channel;
 use tokio::sync::Mutex;
-// use crate::ipc::ipc_service::IpcService;
 
 use crate::utils::config::Config;
 use crate::watcher::folder_watcher::FolderWatcher;
@@ -50,7 +50,12 @@ async fn main() {
 
     let mut watcher = FolderWatcher::new(watcher_tx).expect("Failed to create a folder watcher");
     let mut watcher_processor = WatcherProcessor::new(watcher_rx, database.clone());
-    // let mut ipc_service = IpcService::new(ipc_tx);
+    let mut ipc_service = IpcService::new(ipc_tx);
+
+    ipc_service
+        .run(config.pipe_path.as_str())
+        .await
+        .expect("Failed to run IPC service");
 
     // TODO: For testing purposes - remove
     watcher
