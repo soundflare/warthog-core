@@ -3,7 +3,7 @@ use crate::ipc::ipc_command::IpcCommand::WatchFolder;
 use crate::protos::pipe::schema::warthog_message::Message::{ProjectToAdd, ProjectToRemove};
 use crate::protos::pipe::schema::{Response, UnwatchProject, WarthogMessage, WatchProject};
 use anyhow::Result;
-use log::error;
+use log::{error, info};
 use protobuf::Message;
 use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
@@ -82,6 +82,8 @@ impl IpcService {
 
     /// Spawn a thread for handling new IPC connection and a thread for each connection.
     pub async fn run(&self, path: &str) -> Result<()> {
+        info!("Starting IPC service");
+
         let _ = std::fs::remove_file(path);
         let listener = UnixListener::bind(path)?;
 
