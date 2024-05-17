@@ -33,7 +33,8 @@ static MIGRATOR: Migrator = sqlx::migrate!();
 async fn main() {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    let config = Arc::new(Config::new().unwrap());
+    let config =
+        Arc::new(Config::new().expect("Error collecting configuration from environment variables"));
     let database: Arc<Mutex<Database>> = Arc::new(Mutex::new(Database::new(config.clone()).await));
     MIGRATOR
         .run(&database.lock().await.pool)
