@@ -1,5 +1,5 @@
 use crate::ipc::ipc_command::IpcCommand;
-use crate::ipc::ipc_command::IpcCommand::WatchFolder;
+use crate::ipc::ipc_command::IpcCommand::{UnwatchFolder, WatchFolder};
 use crate::protos::pipe::schema::warthog_message::Message::{ProjectToAdd, ProjectToRemove};
 use crate::protos::pipe::schema::{Response, UnwatchProject, WarthogMessage, WatchProject};
 use anyhow::Result;
@@ -66,8 +66,7 @@ impl IpcService {
         project: UnwatchProject,
         response: &mut Response,
     ) -> Result<()> {
-        self.tx.send(WatchFolder {
-            name: project.name,
+        self.tx.send(UnwatchFolder {
             path: project.project_path,
         })?;
 
