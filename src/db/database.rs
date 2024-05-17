@@ -16,7 +16,7 @@ impl Database {
         debug!("Setting up database");
 
         let connection_options = SqliteConnectOptions::from_str(&config.database_url)
-            .unwrap()
+            .expect("Connection to the database failed")
             .create_if_missing(true);
 
         let pool = match SqlitePool::connect_with(connection_options).await {
