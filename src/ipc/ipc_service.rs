@@ -1,7 +1,7 @@
 use crate::ipc::ipc_command::IpcCommand;
 use crate::ipc::ipc_command::IpcCommand::{UnwatchFolder, WatchFolder};
 use crate::protos::ipc_schema::pipe_message::Message::{ProjectToAdd, ProjectToRemove};
-use crate::protos::ipc_schema::{Response, UnwatchProject, PipeMessage, WatchProject};
+use crate::protos::ipc_schema::{PipeMessage, Response, UnwatchProject, WatchProject};
 use anyhow::Result;
 use log::{error, info};
 use protobuf::Message;
