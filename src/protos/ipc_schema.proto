@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pipe;
 
-message WarthogMessage {
+message PipeMessage {
     oneof message {
         WatchProject project_to_add = 1;
         UnwatchProject project_to_remove = 2;

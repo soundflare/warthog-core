@@ -1,7 +1,7 @@
 use crate::ipc::ipc_command::IpcCommand;
 use crate::ipc::ipc_command::IpcCommand::{UnwatchFolder, WatchFolder};
-use crate::protos::pipe::schema::warthog_message::Message::{ProjectToAdd, ProjectToRemove};
-use crate::protos::pipe::schema::{Response, UnwatchProject, WarthogMessage, WatchProject};
+use crate::protos::ipc_schema::pipe_message::Message::{ProjectToAdd, ProjectToRemove};
+use crate::protos::ipc_schema::{Response, UnwatchProject, PipeMessage, WatchProject};
 use anyhow::Result;
 use log::{error, info};
 use protobuf::Message;
@@ -22,7 +22,7 @@ impl IpcService {
     async fn handle_connection(&self, mut stream: UnixStream) -> Result<()> {
         let mut buf = vec![0; 1024];
         let n = stream.read(&mut buf).await?;
-        let msg = WarthogMessage::parse_from_bytes(&buf[..n])?;
+        let msg = PipeMessage::parse_from_bytes(&buf[..n])?;
 
         let mut response = Response::new();
         match msg.message {

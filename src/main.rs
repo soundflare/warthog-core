@@ -22,9 +22,7 @@ mod utils;
 mod vcs;
 mod watcher;
 mod protos {
-    pub mod pipe {
-        include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
-    }
+    include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
 }
 
 static MIGRATOR: Migrator = sqlx::migrate!();
