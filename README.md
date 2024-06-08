@@ -4,7 +4,7 @@
 
 [![Build status](https://github.com/soundflare/warthog-core/actions/workflows/main.yaml/badge.svg?branch=main)](https://github.com/soundflare/warthog-core/actions/workflows/main.yaml)
 
-Warthog is a version control system designed for large binary files usually present in projects in media productions
+`warthog` is a version control system designed for large binary files usually present in projects in media productions
 (e.g. DAW project files). It's written in Rust for efficiency and performance reasons. The main goal of the project is
 to provide a simple and efficient
 way to version control large binary files and provide a solution like Git for media production workflows.
@@ -36,7 +36,7 @@ variables.
 | DATABASE_URL         | URL for the SQLite database                                         | sqlite://warthog.db | 
 | BLOCK_SIZE           | Block size for splitting binary files into chunks for deduplication | 1024                |
 
-For local development it can also be beneficial to set SQLX_OFFLINE=true to avoid the need for a running database when
+For local development it can also be beneficial to set `SQLX_OFFLINE=true` to avoid the need for a running database when
 checking the SQL queries.
 
 ## Persistence
