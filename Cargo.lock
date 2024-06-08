@@ -1795,7 +1795,6 @@ dependencies = [
  "protobuf",
  "protobuf-codegen",
  "serde",
- "serde_json",
  "sha2",
  "sqlx",
  "thiserror",
