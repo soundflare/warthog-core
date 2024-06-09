@@ -2,7 +2,7 @@ use std::path::Path;
 
 use anyhow::{anyhow, Result};
 use log::{error, info};
-use notify::{Event, recommended_watcher, RecommendedWatcher, RecursiveMode, Watcher};
+use notify::{recommended_watcher, Event, RecommendedWatcher, RecursiveMode, Watcher};
 use tokio::sync::broadcast::Receiver;
 use tokio::sync::mpsc::Sender;
 
