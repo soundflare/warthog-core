@@ -1,14 +1,16 @@
-use crate::ipc::ipc_command::IpcCommand;
-use crate::ipc::ipc_command::IpcCommand::{UnwatchFolder, WatchFolder};
-use crate::protos::ipc_schema::pipe_message::Message::{ProjectToAdd, ProjectToRemove};
-use crate::protos::ipc_schema::{PipeMessage, Response, UnwatchProject, WatchProject};
+use std::sync::Arc;
+
 use anyhow::Result;
 use log::{error, info};
 use protobuf::Message;
-use std::sync::Arc;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{UnixListener, UnixStream};
 use tokio::sync::broadcast::Sender;
+
+use crate::ipc::ipc_command::IpcCommand;
+use crate::ipc::ipc_command::IpcCommand::{UnwatchFolder, WatchFolder};
+use crate::protos::ipc_schema::{GenericResponse, PipeMessage, UnwatchProject, WatchProject};
+use crate::protos::ipc_schema::pipe_message::Message::{ProjectToAdd, ProjectToRemove};
 
 pub struct IpcService {
     tx: Arc<Sender<IpcCommand>>,
@@ -24,7 +26,7 @@ impl IpcService {
         let n = stream.read(&mut buf).await?;
         let msg = PipeMessage::parse_from_bytes(&buf[..n])?;
 
-        let mut response = Response::new();
+        let mut response = GenericResponse::new();
         match msg.message {
             Some(ProjectToAdd(watch_project)) => {
                 self.handle_watch_project(watch_project, &mut response)
@@ -49,7 +51,7 @@ impl IpcService {
     async fn handle_watch_project(
         &self,
         project: WatchProject,
-        response: &mut Response,
+        response: &mut GenericResponse,
     ) -> Result<()> {
         self.tx.send(WatchFolder {
             name: project.name,
@@ -64,7 +66,7 @@ impl IpcService {
     async fn handle_unwatch_project(
         &self,
         project: UnwatchProject,
-        response: &mut Response,
+        response: &mut GenericResponse,
     ) -> Result<()> {
         self.tx.send(UnwatchFolder {
             path: project.project_path,

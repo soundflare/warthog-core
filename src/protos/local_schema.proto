@@ -3,31 +3,35 @@ syntax = "proto3";
 package local;
 
 message Recipe {
-    string session_id = 1;
-    string base_session_id = 2;
-    repeated Change changes = 3;
+  string session_id = 1;
+  string base_session_id = 2;
+  repeated Change changes = 3;
 }
 
 message Change {
-    enum ChangeType {
-        ADD = 0;
-        MODIFY = 1;
-        DELETE = 2;
-    }
+  enum ChangeType {
+    ADD = 0;
+    MODIFY = 1;
+    DELETE = 2;
+  }
 
-    ChangeType change_type = 1;
-    string file_path = 2;
-    optional string blob_id = 3;
+  ChangeType change_type = 1;
+  string file_path = 2;
+  optional string blob_id = 3;
 }
 
 message Blob {
-    string blob_id = 1;
-    string file_path = 2;
-    uint64 size = 3;
-    string checksum = 4;
+  string blob_id = 1;
+  string file_path = 2;
+  uint64 size = 3;
+  string checksum = 4;
 }
 
 message BlobList {
-    repeated Blob blobs = 1;
+  repeated Blob blobs = 1;
 }
 
+message Metadata {
+  string id = 1;
+  string name = 2;
+}

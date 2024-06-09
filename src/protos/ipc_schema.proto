@@ -3,24 +3,37 @@ syntax = "proto3";
 package pipe;
 
 message PipeMessage {
-    oneof message {
-        WatchProject project_to_add = 1;
-        UnwatchProject project_to_remove = 2;
-    }
+  oneof message {
+    WatchProject project_to_add = 1;
+    UnwatchProject project_to_remove = 2;
+  }
 }
 
 message WatchProject {
-    string name = 1;
-    string project_path = 2;
-    optional int32 debounce_period = 3; // Debounce period in milliseconds
+  string name = 1;
+  string project_path = 2;
 }
 
 message UnwatchProject {
-    string name = 1;
-    string project_path = 2;
+  string name = 1;
+  string project_path = 2;
 }
 
-message Response {
-    bool success = 1;
-    string response_message = 2;
+message GetProjectVersions {
+  string project_path = 1;
+}
+
+message ProjectVersion {
+  string version = 1;
+}
+
+message GetProjectVersionsResponse {
+  bool success = 1;
+  string response_message = 2;
+  repeated ProjectVersion project_versions = 3;
+}
+
+message GenericResponse {
+  bool success = 1;
+  string response_message = 2;
 }
