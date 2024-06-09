@@ -9,8 +9,8 @@ use tokio::sync::mpsc::channel;
 
 use crate::db::database::Database;
 use crate::ipc::ipc_command::IpcCommand;
+use crate::ipc::ipc_request_processor::IpcRequestProcessor;
 use crate::ipc::ipc_service::IpcService;
-use crate::ipc::request_processor::RequestProcessor;
 use crate::utils::config::Config;
 use crate::watcher::event_processor::EventProcessor;
 use crate::watcher::folder_watcher::FolderWatcher;
@@ -54,7 +54,7 @@ async fn main() {
         folder_watcher.watch_for_folders().await;
     });
 
-    let mut request_processor = RequestProcessor::new(ipc_tx.subscribe(), database.clone());
+    let mut request_processor = IpcRequestProcessor::new(ipc_tx.subscribe(), database.clone());
     tokio::spawn(async move {
         request_processor.process_commands().await;
     });

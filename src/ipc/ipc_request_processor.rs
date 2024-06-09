@@ -10,12 +10,12 @@ use crate::db::database::Database;
 use crate::ipc::ipc_command::IpcCommand;
 use crate::vcs::version_control::create_repository;
 
-pub struct RequestProcessor {
+pub struct IpcRequestProcessor {
     rx: Receiver<IpcCommand>,
     database: Arc<Mutex<Database>>,
 }
 
-impl RequestProcessor {
+impl IpcRequestProcessor {
     pub fn new(rx: Receiver<IpcCommand>, database: Arc<Mutex<Database>>) -> Self {
         Self { rx, database }
     }
