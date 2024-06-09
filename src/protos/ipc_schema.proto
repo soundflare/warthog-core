@@ -10,13 +10,11 @@ message PipeMessage {
 }
 
 message WatchProject {
-  string name = 1;
-  string project_path = 2;
+  string project_path = 1;
 }
 
 message UnwatchProject {
-  string name = 1;
-  string project_path = 2;
+  string project_path = 1;
 }
 
 message GetProjectVersions {

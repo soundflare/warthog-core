@@ -1,15 +1,16 @@
 extern crate notify;
 
+use std::sync::Arc;
+
+use env_logger::Env;
+use sqlx::migrate::Migrator;
+use tokio::sync::{broadcast, Mutex};
+use tokio::sync::mpsc::channel;
+
 use crate::db::database::Database;
 use crate::ipc::ipc_command::IpcCommand;
 use crate::ipc::ipc_service::IpcService;
 use crate::ipc::request_processor::RequestProcessor;
-use env_logger::Env;
-use sqlx::migrate::Migrator;
-use std::sync::Arc;
-use tokio::sync::mpsc::channel;
-use tokio::sync::{broadcast, Mutex};
-
 use crate::utils::config::Config;
 use crate::watcher::event_processor::EventProcessor;
 use crate::watcher::folder_watcher::FolderWatcher;
@@ -17,7 +18,6 @@ use crate::watcher::watcher_command::WatcherCommand;
 
 mod db;
 mod ipc;
-mod tus;
 mod utils;
 mod vcs;
 mod watcher;

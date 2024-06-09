@@ -1,12 +1,14 @@
+use std::path::Path;
+
+use anyhow::{anyhow, Result};
+use log::{error, info};
+use notify::{Event, recommended_watcher, RecommendedWatcher, RecursiveMode, Watcher};
+use tokio::sync::broadcast::Receiver;
+use tokio::sync::mpsc::Sender;
+
 use crate::ipc::ipc_command::IpcCommand;
 use crate::watcher::watcher_command::WatcherCommand;
 use crate::watcher::watcher_command::WatcherCommand::ChangeDetected;
-use anyhow::{anyhow, Result};
-use log::{error, info};
-use notify::{recommended_watcher, Event, RecommendedWatcher, RecursiveMode, Watcher};
-use std::path::Path;
-use tokio::sync::broadcast::Receiver;
-use tokio::sync::mpsc::Sender;
 
 pub struct FolderWatcher {
     watcher: RecommendedWatcher,
@@ -53,7 +55,7 @@ impl FolderWatcher {
                         .watch(Path::new(&path), RecursiveMode::Recursive)
                         .map_err(|e| anyhow!("Failed to add folder for watching: {}", e))
                     {
-                        Ok(_) => info!("Watching folder: {}", path),
+                        Ok(_) => info!("Watching folder: {}", path.display()),
                         Err(e) => error!("Error trying to watch folder: {}", e),
                     }
                 }

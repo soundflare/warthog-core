@@ -1,16 +1,18 @@
-use crate::utils::config::Config;
+use std::collections::HashMap;
+use std::path::{Path, PathBuf};
+use std::time::{SystemTime, UNIX_EPOCH};
+
 use anyhow::Result;
 use log::info;
 use sha2::{Digest, Sha256};
-use std::collections::HashMap;
-use std::path::Path;
-use std::time::{SystemTime, UNIX_EPOCH};
 use tokio::fs::{create_dir_all, File};
 use tokio::io::AsyncReadExt;
 use walkdir::WalkDir;
 
-pub async fn create_repository(path: String) -> Result<()> {
-    info!("Creating repository for path: {}", path);
+use crate::utils::config::Config;
+
+pub async fn create_repository(path: &PathBuf) -> Result<()> {
+    info!("Creating repository for path: {}", path.display());
     let warthog_dir_path = Path::new(&path).join(".warthog");
     create_dir_all(&warthog_dir_path).await?;
 

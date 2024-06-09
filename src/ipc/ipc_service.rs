@@ -54,8 +54,7 @@ impl IpcService {
         response: &mut GenericResponse,
     ) -> Result<()> {
         self.tx.send(WatchFolder {
-            name: project.name,
-            path: project.project_path,
+            path: project.project_path.into(),
         })?;
 
         response.success = true;
@@ -69,7 +68,7 @@ impl IpcService {
         response: &mut GenericResponse,
     ) -> Result<()> {
         self.tx.send(UnwatchFolder {
-            path: project.project_path,
+            path: project.project_path.into(),
         })?;
 
         response.success = true;
