@@ -1,3 +1,6 @@
+use std::ffi::OsString;
+use std::os::unix::ffi::OsStringExt;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -9,8 +12,8 @@ use tokio::sync::broadcast::Sender;
 
 use crate::ipc::ipc_command::IpcCommand;
 use crate::ipc::ipc_command::IpcCommand::{UnwatchFolder, WatchFolder};
-use crate::protos::ipc_schema::pipe_message::Message::{ProjectToAdd, ProjectToRemove};
 use crate::protos::ipc_schema::{GenericResponse, PipeMessage, UnwatchProject, WatchProject};
+use crate::protos::ipc_schema::pipe_message::Message::{ProjectToAdd, ProjectToRemove};
 
 pub struct IpcService {
     tx: Arc<Sender<IpcCommand>>,
@@ -54,7 +57,7 @@ impl IpcService {
         response: &mut GenericResponse,
     ) -> Result<()> {
         self.tx.send(WatchFolder {
-            path: project.project_path.into(),
+            path: PathBuf::from(OsString::from_vec(project.project_path)),
         })?;
 
         response.success = true;
@@ -68,7 +71,7 @@ impl IpcService {
         response: &mut GenericResponse,
     ) -> Result<()> {
         self.tx.send(UnwatchFolder {
-            path: project.project_path.into(),
+            path: PathBuf::from(OsString::from_vec(project.project_path)),
         })?;
 
         response.success = true;
