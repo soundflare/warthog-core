@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use env_logger::Env;
 use sqlx::migrate::Migrator;
-use tokio::sync::mpsc::channel;
 use tokio::sync::{broadcast, Mutex};
+use tokio::sync::mpsc::channel;
 
 use crate::db::database::Database;
 use crate::ipc::ipc_command::IpcCommand;
@@ -22,7 +22,7 @@ mod utils;
 mod vcs;
 mod watcher;
 
-mod protos {
+mod generated {
     pub mod local;
     pub mod pipe;
 }

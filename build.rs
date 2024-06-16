@@ -1,14 +1,11 @@
 fn main() {
     let mut config = prost_build::Config::new();
-    config.out_dir("src/protos");
+    config.out_dir("src/generated");
     config.protoc_arg("--experimental_allow_proto3_optional");
     config
         .compile_protos(
-            &[
-                "src/protos/ipc_schema.proto",
-                "src/protos/local_schema.proto",
-            ],
-            &["src/protos"],
+            &["proto/ipc_schema.proto", "proto/local_schema.proto"],
+            &["proto"],
         )
         .unwrap();
 }
