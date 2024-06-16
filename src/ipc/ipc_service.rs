@@ -10,8 +10,8 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{UnixListener, UnixStream};
 use tokio::sync::broadcast::Sender;
 
-use crate::generated::pipe::{GenericResponse, PipeMessage, UnwatchProject, WatchProject};
 use crate::generated::pipe::pipe_message::Message::{ProjectToAdd, ProjectToRemove};
+use crate::generated::pipe::{GenericResponse, PipeMessage, UnwatchProject, WatchProject};
 use crate::ipc::ipc_command::IpcCommand;
 use crate::ipc::ipc_command::IpcCommand::{UnwatchFolder, WatchFolder};
 
