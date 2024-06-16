@@ -12,8 +12,8 @@ use tokio::sync::broadcast::Sender;
 
 use crate::ipc::ipc_command::IpcCommand;
 use crate::ipc::ipc_command::IpcCommand::{UnwatchFolder, WatchFolder};
-use crate::protos::pipe::{GenericResponse, PipeMessage, UnwatchProject, WatchProject};
 use crate::protos::pipe::pipe_message::Message::{ProjectToAdd, ProjectToRemove};
+use crate::protos::pipe::{GenericResponse, PipeMessage, UnwatchProject, WatchProject};
 
 pub struct IpcService {
     tx: Arc<Sender<IpcCommand>>,
