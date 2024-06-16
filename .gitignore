@@ -14,3 +14,6 @@ out/
 
 # SQLite
 *.db*
+
+# Protobuf generated files
+**/src/protos/*.rs

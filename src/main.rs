@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use env_logger::Env;
 use sqlx::migrate::Migrator;
-use tokio::sync::mpsc::channel;
 use tokio::sync::{broadcast, Mutex};
+use tokio::sync::mpsc::channel;
 
 use crate::db::database::Database;
 use crate::ipc::ipc_command::IpcCommand;
@@ -21,8 +21,10 @@ mod ipc;
 mod utils;
 mod vcs;
 mod watcher;
+
 mod protos {
-    include!(concat!(env!("OUT_DIR"), "/protos/mod.rs"));
+    pub mod local;
+    pub mod pipe;
 }
 
 static MIGRATOR: Migrator = sqlx::migrate!();
