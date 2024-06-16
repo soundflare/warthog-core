@@ -16,4 +16,4 @@ out/
 *.db*
 
 # Protobuf generated files
-**/src/generated/*.rs
+src/generated/*.rs

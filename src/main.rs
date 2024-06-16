@@ -23,7 +23,9 @@ mod vcs;
 mod watcher;
 
 mod generated {
+    #[rustfmt::skip]
     pub mod local;
+    #[rustfmt::skip]
     pub mod pipe;
 }
 
